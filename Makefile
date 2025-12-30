@@ -17,6 +17,11 @@ frontend-install:
 frontend-run:
 	cd frontend && npm run dev
 
+install_precommit: ## To install pre-commit hooks > make install_precommit
+	@echo "Installing pre-commit hooks"
+	@pre-commit install -t pre-commit
+	@pre-commit install -t pre-push
+
 run_backend:
 	@python backend/main.py
 

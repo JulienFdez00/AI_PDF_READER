@@ -1,10 +1,11 @@
+"""Stream AI explanation."""
+
 from __future__ import annotations
 
 from typing import Generator, Optional
 
 from backend.app.chain import get_llm_explanation_chain
 from backend.app.llm import get_expert_llm
-
 from config.config import LOGGER
 
 
@@ -12,7 +13,6 @@ def stream_explanation(
     prompt: str,
     extracted_text: Optional[str],
 ) -> Generator[str, None, None]:
-
     model = get_expert_llm()
     chain = get_llm_explanation_chain(model)
     LOGGER.debug(f"prompt: {prompt}")

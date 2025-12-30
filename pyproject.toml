@@ -1,0 +1,86 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "AI_PDF_READER"
+authors = [
+    { name = "Julien Fernandez", email = "j.fernandez17@ejm.org" },
+]
+version = "0.0.1"
+description = "Repo for PDF reader with AI assistant."
+readme = "README.md"
+requires-python = ">=3.13"
+
+[tool.setuptools]
+packages = ["backend", "frontend", "config"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py313"
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.ruff.lint]
+select = [
+    "ANN", # flake8-annotations
+    "ARG", # flake8-unused-arguments
+    "C4",  # comprehensions
+    "C90", # mccabe
+    "D",   # docstrings
+    "E",   # Errors
+    "F",   # Pyflakes
+    "I",   # isort
+    "N",   # pep8-naming
+    "PD",  # pandas-vet (PD)
+    "Q",   # flake8-quotes
+    "RUF", # Ruff-specific rules
+    "W",   # Warnings
+] # See: https://beta.ruff.rs/docs/rules/
+ignore = [
+    "ANN101", # Missing type for "self" in method
+    "ANN102", # Missing type for "cls" in classmethod
+    "ANN201", # Missing return type for "self" in method
+    "ANN202", # Missing return type for "cls" in classmethod
+    "ANN204", # Missing return type for special method
+    "D100",   # Missing docstring in public module
+    "D101",   # Missing docstring in public class
+    "D102",   # Missing docstring in public class
+    "D103",   # Missing docstring in public function
+    "D104",   # Missing docstring in public package
+    "D105",   # Missing docstring in magic method
+    "D106",   # Missing docstring in public nested class
+    "D107",   # Missing docstring in `__init__`
+    "D203",   # 1 blank line required before class docstring
+    "D213",   # Multi-line docstring summary should start at the second line
+    "D415",   # First line should end with a period, question mark, or exclamation point
+    "RUF015", # Prefer `next(...)` over single element slice
+]
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+    "*.ipynb",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"**/__init__.py" = ["E402"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["src", "tests"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"

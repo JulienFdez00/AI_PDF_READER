@@ -1,15 +1,16 @@
 """main app file."""
+# ruff: noqa: ARG001
 
 from __future__ import annotations
 
 from typing import Generator
 
-from backend.app.parser import PDFParser
-from backend.app.stream_explanation import stream_explanation
 from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 
+from backend.app.parser import PDFParser
+from backend.app.stream_explanation import stream_explanation
 from config.config import LOGGER
 
 app = FastAPI(title="AI PDF Reader API")

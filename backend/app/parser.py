@@ -10,14 +10,14 @@ from typing import List
 
 import openai
 import pymupdf
-from backend.app.llm import get_parsing_llm
-from backend.app.prompts import TEXT_EXTRACTION_PROMPT
 from docling.datamodel.base_models import DocumentStream, InputFormat
 from docling.datamodel.pipeline_options import PdfPipelineOptions, TableFormerMode
 from docling.document_converter import DocumentConverter, PdfFormatOption
 from langchain_core.messages import HumanMessage
 from pdf2image import convert_from_bytes
 
+from backend.app.llm import get_parsing_llm
+from backend.app.prompts import TEXT_EXTRACTION_PROMPT
 from config.config import LOGGER, PARSER_MODE
 
 
@@ -31,6 +31,7 @@ class Parser(ABC):
 
 class PDFParser(Parser):
     """Parse PDF page."""
+
     def parse_document(
         self: PDFParser,
         file_bytes: bytes,
@@ -48,9 +49,8 @@ class PDFParser(Parser):
             content = self._extract_text_from_image(image_in_memory)
 
         return content
-    def _parse_with_docling(
-        self: PDFParser, file_bytes: bytes
-    ) -> str:
+
+    def _parse_with_docling(self: PDFParser, file_bytes: bytes) -> str:
         """Parse page with docling."""
         pipeline_options = PdfPipelineOptions(do_table_structure=True)
         pipeline_options.table_structure_options.mode = TableFormerMode.ACCURATE
@@ -67,9 +67,7 @@ class PDFParser(Parser):
                 preserve_metadata=0,
             )
             converter = DocumentConverter(
-                format_options={
-                    InputFormat.PDF: PdfFormatOption(pipeline_options=pipeline_options)
-                }
+                format_options={InputFormat.PDF: PdfFormatOption(pipeline_options=pipeline_options)}
             )
             doc_stream = DocumentStream(name="doc", stream=BytesIO(single_page_doc))
             result = converter.convert(doc_stream)
@@ -77,14 +75,12 @@ class PDFParser(Parser):
         LOGGER.debug(f"extracted pages: {extracted_pages}")
         return extracted_pages
 
-    def _convert_pdf_page_to_image(
-        self: PDFParser, file_bytes: bytes
-    ) -> BytesIO:
+    def _convert_pdf_page_to_image(self: PDFParser, file_bytes: bytes) -> BytesIO:
         """Convert a PDF file to an image."""
         images_bytes = convert_from_bytes(file_bytes)
 
         images_in_memory = []
-        for image in images_bytes: # Using a list in case we want to send several images
+        for image in images_bytes:  # Using a list in case we want to send several images
             image_in_memory = BytesIO()
             image.save(image_in_memory, format="PNG")
             image_in_memory.seek(0)
@@ -92,7 +88,6 @@ class PDFParser(Parser):
 
         LOGGER.debug(f"Number of pages to parse: {len(images_in_memory)}")
         return images_in_memory[0]
-
 
     def _extract_text_from_image(
         self: PDFParser,
@@ -113,9 +108,7 @@ class PDFParser(Parser):
                         {"type": "text", "text": image_prompt_template},
                         {
                             "type": "image_url",
-                            "image_url": {
-                                "url": f"data:image/png;base64,{image_data}"
-                            },
+                            "image_url": {"url": f"data:image/png;base64,{image_data}"},
                         },
                     ],
                 )
@@ -128,9 +121,7 @@ class PDFParser(Parser):
         except Exception as e:
             raise e
 
-    def _process_images(
-        self: PDFParser, messages: list[List[HumanMessage]], model: object
-    ) -> str:
+    def _process_images(self: PDFParser, messages: list[List[HumanMessage]], model: object) -> str:
         """Process messages sequentially (v1 expects a single message)."""
         max_retries = 3
         responses = []

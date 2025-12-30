@@ -1,4 +1,5 @@
 """Config."""
+
 import logging
 from pathlib import Path
 
@@ -16,5 +17,4 @@ LOGGER_LEVEL = logging.DEBUG
 LOGGER = setup_logger(logger_level=LOGGER_LEVEL)
 
 # Parsing type
-
 PARSER_MODE = "Docling"
