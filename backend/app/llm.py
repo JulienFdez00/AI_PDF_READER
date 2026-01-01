@@ -31,7 +31,7 @@ def get_parsing_llm(max_tokens: int = 4096) -> BaseChatModel:
         raise ValueError(f"Missing API key for provider '{creds.provider}'.")
     model = _resolve_model(creds.provider, creds.parsing_model, "parsing")
     masked = f"{api_key[:4]}...{api_key[-4:]}" if api_key else "missing"
-    LOGGER.debug("Parsing LLM provider {} with key {}", creds.provider, masked)
+    LOGGER.debug(f"Parsing LLM provider {creds.provider} with key {masked}")
     return init_chat_model(
         model=model,
         max_tokens=max_tokens,
@@ -51,7 +51,7 @@ def get_expert_llm(max_tokens: int = 4096) -> BaseChatModel:
         raise ValueError(f"Missing API key for provider '{creds.provider}'.")
     model = _resolve_model(creds.provider, creds.expert_model, "expert")
     masked = f"{api_key[:4]}...{api_key[-4:]}" if api_key else "missing"
-    LOGGER.debug("Expert LLM provider {} with key {}", creds.provider, masked)
+    LOGGER.debug(f"Expert LLM provider {creds.provider} with key {masked}")
     return init_chat_model(
         model=model,
         max_tokens=max_tokens,

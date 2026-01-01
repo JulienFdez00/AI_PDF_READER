@@ -68,7 +68,7 @@ def add_llm_keys(payload: LlmKeysRequest) -> dict:
         if parsing_model:
             get_parsing_llm()
     except Exception as exc:
-        LOGGER.exception("Failed to validate LLM credentials: {}", exc)
+        LOGGER.exception(f"Failed to validate LLM credentials: {exc}")
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
     return {"status": "ok"}
@@ -85,7 +85,7 @@ def explain_page(
     parse_with_llm: bool = Form(False),
 ) -> StreamingResponse:
     pdf_data = pdf_bytes.file.read()
-    LOGGER.debug("Received PDF bytes: %d", len(pdf_data))
+    LOGGER.debug(f"Received PDF bytes: {len(pdf_data)}")
     try:
         get_expert_llm()
         if parse_with_llm:
@@ -114,7 +114,7 @@ def explain_page(
                     yield f"data: {line}\n".encode("utf-8")
                 yield b"\n"
         except Exception as exc:
-            LOGGER.exception("Streaming failed: {}", exc)
+            LOGGER.exception(f"Streaming failed: {exc}")
             yield f"event: error\ndata: {exc}\n\n".encode("utf-8")
         finally:
             yield b"event: done\ndata: [DONE]\n\n"
