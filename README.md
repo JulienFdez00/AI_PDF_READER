@@ -1,6 +1,6 @@
 # AI PDF Reader
 
-A Preview-inspired PDF reader with an AI assistant sidebar. Open any local PDF, navigate pages, and ask for explanations.
+An AI reading assistant I am semi-vibe coding. For when you want to ask questions on complicated texts in real-time. Initally got inspired to build this while attempting to read Hegel's Logic.
 
 ## Features
 - Preview-like viewer with page navigation and zoom
