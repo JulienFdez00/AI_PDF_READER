@@ -21,3 +21,6 @@ PARSER_MODE = "Docling"
 
 # Model Providers
 ALLOWED_PROVIDERS = {"openai", "anthropic", "gemini"}
+
+# Logging
+LOG_PREVIEW_CHARS = 64

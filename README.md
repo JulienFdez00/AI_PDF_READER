@@ -74,7 +74,7 @@ Multipart form fields:
 `POST /add-llm-keys`
 
 JSON body:
-- `provider` (string): openai/anthropic/mistral/gemini
+- `provider` (string): openai/anthropic/gemini (for now)
 - `api_key` (string): provider key
 - `expert_model` (string, optional): model for explanations
 - `parsing_model` (string, optional): model for parsing
