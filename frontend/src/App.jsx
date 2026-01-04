@@ -1,8 +1,11 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import ReactMarkdown from "react-markdown";
 import { GlobalWorkerOptions, getDocument } from "pdfjs-dist";
 import workerSrc from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 import { PDFDocument } from "pdf-lib";
+
+import AssistantSidebar from "./components/AssistantSidebar.jsx";
+import PdfViewer from "./components/PdfViewer.jsx";
+import Toolbar from "./components/Toolbar.jsx";
 
 GlobalWorkerOptions.workerSrc = workerSrc;
 
@@ -26,7 +29,6 @@ const saveStored = (key, value) => {
 
 export default function App() {
   const canvasRef = useRef(null);
-  const fileInputRef = useRef(null);
 
   const [pdfDoc, setPdfDoc] = useState(null);
   const [pdfBytes, setPdfBytes] = useState(null);
@@ -35,7 +37,6 @@ export default function App() {
   const [scale, setScale] = useState(1.1);
 
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [sidebarTab, setSidebarTab] = useState("assistant");
   const [sidebarWidth, setSidebarWidth] = useState(360);
   const [isResizing, setIsResizing] = useState(false);
 
@@ -129,11 +130,7 @@ export default function App() {
   };
 
   const handleExplain = async (customPrompt) => {
-    if (!pdfDoc) {
-      setAssistantStatus("Open a PDF first.");
-      return;
-    }
-    if (!pdfBytes) {
+    if (!pdfDoc || !pdfBytes) {
       setAssistantStatus("Open a PDF first.");
       return;
     }
@@ -289,184 +286,47 @@ export default function App() {
 
   return (
     <div className="app-shell">
-      <header className="toolbar">
-        <div className="toolbar-left">
-          <button className="toolbar-button" onClick={() => fileInputRef.current?.click()}>
-            Open PDF
-          </button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="application/pdf"
-            onChange={handleFileOpen}
-            className="hidden-input"
-          />
-          <div className="divider" />
-          <button className="toolbar-button" onClick={prevPage} disabled={!canPaginate}>
-            ◀
-          </button>
-          <button className="toolbar-button" onClick={nextPage} disabled={!canPaginate}>
-            ▶
-          </button>
-          <span className="page-indicator">
-            Page {pageIndex} / {numPages || "-"}
-          </span>
-          <div className="divider" />
-          <label className="zoom">
-            Zoom
-            <input
-              type="range"
-              min="0.6"
-              max="1.8"
-              step="0.1"
-              value={scale}
-              onChange={(event) => setScale(Number(event.target.value))}
-            />
-          </label>
-        </div>
-        <div className="toolbar-right">
-          <button
-            className="toolbar-button"
-            onClick={() => setSidebarOpen((prev) => !prev)}
-          >
-            {sidebarOpen ? "Hide Assistant" : "Show Assistant"}
-          </button>
-        </div>
-      </header>
+      <Toolbar
+        onFileOpen={handleFileOpen}
+        onPrev={prevPage}
+        onNext={nextPage}
+        canPaginate={canPaginate}
+        pageIndex={pageIndex}
+        numPages={numPages}
+        scale={scale}
+        onScaleChange={(event) => setScale(Number(event.target.value))}
+        sidebarOpen={sidebarOpen}
+        onToggleSidebar={() => setSidebarOpen((prev) => !prev)}
+      />
 
       <main className="content-area">
-        <section className="viewer">
-          <div className="canvas-shell">
-            <canvas ref={canvasRef} className="pdf-canvas" />
-            {!pdfDoc && (
-              <div className="empty-state">
-                <h2>Open a PDF to get started</h2>
-                <p>Drop a spec, contract, or design doc and ask the assistant to explain it.</p>
-              </div>
-            )}
-          </div>
-        </section>
+        <PdfViewer canvasRef={canvasRef} hasPdf={Boolean(pdfDoc)} />
 
         {sidebarOpen && (
-          <aside className="assistant" style={{ width: `${sidebarWidth}px` }}>
-            <div
-              className="assistant-resizer"
-              onMouseDown={() => setIsResizing(true)}
-              role="separator"
-              aria-orientation="vertical"
-              aria-label="Resize assistant panel"
-            />
-            <div className="assistant-tabs">
-              <button
-                className={sidebarTab === "assistant" ? "tab active" : "tab"}
-                onClick={() => setSidebarTab("assistant")}
-              >
-                Assistant
-              </button>
-              <button
-                className={sidebarTab === "keys" ? "tab active" : "tab"}
-                onClick={() => setSidebarTab("keys")}
-              >
-                API Keys
-              </button>
-            </div>
-
-            {sidebarTab === "assistant" ? (
-              <div className="assistant-body">
-                <div className="assistant-controls">
-                  <label className="control">
-                    Prompt
-                    <textarea
-                      value={prompt}
-                      onChange={(event) => setPrompt(event.target.value)}
-                      placeholder={DEFAULT_PROMPT}
-                    />
-                  </label>
-                  <label className="toggle">
-                    <input
-                      type="checkbox"
-                      checked={parseWithLlm}
-                      onChange={(event) => setParseWithLlm(event.target.checked)}
-                    />
-                    Parse with LLM
-                    <span
-                      className="info-bubble"
-                      data-tooltip="Can perform better with scanned pages but more expensive."
-                      aria-label="Can perform better with scanned pages but more expensive."
-                    >
-                      i
-                    </span>
-                  </label>
-                  <button
-                    className="primary"
-                    onClick={() => handleExplain(prompt)}
-                    disabled={!pdfDoc || isStreaming}
-                  >
-                    Help me understand this page
-                  </button>
-                </div>
-                <div className="assistant-output">
-                  <div className={assistantError ? "status status-error" : "status"}>
-                    Status: {assistantStatus}
-                  </div>
-                  {assistantText ? (
-                    <div className="assistant-markdown">
-                      <ReactMarkdown>{assistantText}</ReactMarkdown>
-                    </div>
-                  ) : isStreaming ? (
-                    <div className="assistant-empty">Thinking...</div>
-                  ) : (
-                    <div className="assistant-empty">Awaiting your prompt.</div>
-                  )}
-                </div>
-              </div>
-            ) : (
-              <div className="assistant-body">
-                <label className="control">
-                  Provider
-                  <select value={provider} onChange={(event) => setProvider(event.target.value)}>
-                    <option value="openai">OpenAI</option>
-                    <option value="anthropic">Anthropic</option>
-                    <option value="gemini">Gemini</option>
-                  </select>
-                </label>
-                <label className="control">
-                  Model
-                  <input
-                    type="text"
-                    value={model}
-                    onChange={(event) => setModel(event.target.value)}
-                    placeholder="claude-sonnet-4-5"
-                  />
-                </label>
-                <label className="control">
-                  Parsing Model <span className="optional">(optional)</span>
-                  <input
-                    type="text"
-                    value={parsingModel}
-                    onChange={(event) => setParsingModel(event.target.value)}
-                    placeholder="claude-haiku-4-5"
-                  />
-                </label>
-                <label className="control">
-                  API Key
-                  <input
-                    type="password"
-                    value={apiKey}
-                    onChange={(event) => setApiKey(event.target.value)}
-                    placeholder="sk-..."
-                  />
-                </label>
-                <button className="primary" onClick={handleSaveKeys}>
-                  Save Credentials
-                </button>
-                {keyStatus && <div className="hint">{keyStatus}</div>}
-                <div className="hint">
-                  Keys are stored securely in your local keychain when you save them.
-                </div>
-              </div>
-            )}
-          </aside>
+          <AssistantSidebar
+            sidebarWidth={sidebarWidth}
+            onResizeStart={() => setIsResizing(true)}
+            prompt={prompt}
+            onPromptChange={(event) => setPrompt(event.target.value)}
+            onExplain={() => handleExplain(prompt)}
+            explainDisabled={!pdfDoc || isStreaming}
+            assistantStatus={assistantStatus}
+            assistantText={assistantText}
+            isStreaming={isStreaming}
+            assistantError={assistantError}
+            parseWithLlm={parseWithLlm}
+            onToggleParseWithLlm={(event) => setParseWithLlm(event.target.checked)}
+            provider={provider}
+            onProviderChange={(event) => setProvider(event.target.value)}
+            model={model}
+            onModelChange={(event) => setModel(event.target.value)}
+            parsingModel={parsingModel}
+            onParsingModelChange={(event) => setParsingModel(event.target.value)}
+            apiKey={apiKey}
+            onApiKeyChange={(event) => setApiKey(event.target.value)}
+            onSaveKeys={handleSaveKeys}
+            keyStatus={keyStatus}
+          />
         )}
       </main>
     </div>

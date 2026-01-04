@@ -13,7 +13,7 @@ from backend.app.credentials import set_llm_credentials
 from backend.app.llm import get_expert_llm, get_parsing_llm
 from backend.app.parser import PDFParser
 from backend.app.stream_explanation import stream_explanation
-from config.config import LOGGER
+from config.config import LOG_PREVIEW_CHARS, LOGGER
 
 app = FastAPI(title="AI PDF Reader API")
 
@@ -97,11 +97,13 @@ def explain_page(
     parser = PDFParser()
     try:
         extracted_text = parser.parse_document(pdf_data, parse_with_llm)
+        preview = extracted_text[:LOG_PREVIEW_CHARS]
         LOGGER.debug(f"Extracted text length: {len(extracted_text)}")
-        LOGGER.debug(f"Extracted text: {extracted_text}")
+        LOGGER.debug(f"Extracted text (first {LOG_PREVIEW_CHARS} chars): {preview}")
     except Exception as exc:
-        LOGGER.exception(f"Failed to parse PDF page: {exc}")
-        extracted_text = ""
+        message = f"There was a parsing error: {exc}, please try again."
+        LOGGER.error(message)
+        raise HTTPException(status_code=400, detail=message) from exc
 
     def event_stream() -> Generator[bytes, None, None]:
         try:

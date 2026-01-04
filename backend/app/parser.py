@@ -6,10 +6,8 @@ import base64
 import time
 from abc import ABC
 from io import BytesIO
-from typing import List
 
 import openai
-import pymupdf
 from docling.datamodel.base_models import DocumentStream, InputFormat
 from docling.datamodel.pipeline_options import PdfPipelineOptions, TableFormerMode
 from docling.document_converter import DocumentConverter, PdfFormatOption
@@ -18,13 +16,13 @@ from pdf2image import convert_from_bytes
 
 from backend.app.llm import get_parsing_llm
 from backend.app.prompts import TEXT_EXTRACTION_PROMPT
-from config.config import LOGGER
+from config.config import LOG_PREVIEW_CHARS, LOGGER
 
 
 class Parser(ABC):
     """Abstract class for document parsing."""
 
-    def parse_document(self: Parser, file_bytes: bytes) -> str:
+    def parse_document(self: Parser, file_bytes: bytes, parse_with_llm: bool) -> str:
         """Get text from a document."""
         raise NotImplementedError("parse_document method must be implemented.")
 
@@ -56,32 +54,22 @@ class PDFParser(Parser):
         pipeline_options = PdfPipelineOptions(do_table_structure=True)
         pipeline_options.table_structure_options.mode = TableFormerMode.ACCURATE
 
-        pdf_document = pymupdf.Document(stream=file_bytes, filetype="pdf")
-        max_page = len(pdf_document)
-        extracted_pages = ""
-
-        for i in range(max_page):
-            single_page_pdf = pymupdf.open()
-            single_page_pdf.insert_pdf(pdf_document, from_page=i, to_page=i)
-            single_page_doc = single_page_pdf.tobytes(
-                no_new_id=True,
-                preserve_metadata=0,
-            )
-            converter = DocumentConverter(
-                format_options={InputFormat.PDF: PdfFormatOption(pipeline_options=pipeline_options)}
-            )
-            doc_stream = DocumentStream(name="doc", stream=BytesIO(single_page_doc))
-            result = converter.convert(doc_stream)
-            extracted_pages += result.document.export_to_markdown()
-        LOGGER.debug(f"extracted pages: {extracted_pages}")
-        return extracted_pages
+        converter = DocumentConverter(
+            format_options={InputFormat.PDF: PdfFormatOption(pipeline_options=pipeline_options)}
+        )
+        doc_stream = DocumentStream(name="doc", stream=BytesIO(file_bytes))
+        result = converter.convert(doc_stream)
+        extracted_text = result.document.export_to_markdown()
+        preview = extracted_text[:LOG_PREVIEW_CHARS]
+        LOGGER.debug(f"extracted pages (first {LOG_PREVIEW_CHARS} chars): {preview}")
+        return extracted_text
 
     def _convert_pdf_page_to_image(self: PDFParser, file_bytes: bytes) -> BytesIO:
         """Convert a PDF file to an image."""
         images_bytes = convert_from_bytes(file_bytes)
 
         images_in_memory = []
-        for image in images_bytes:  # Using a list in case we want to send several images
+        for image in images_bytes:  # Using a list in case we want to send several images in future
             image_in_memory = BytesIO()
             image.save(image_in_memory, format="PNG")
             image_in_memory.seek(0)
@@ -122,7 +110,7 @@ class PDFParser(Parser):
         except Exception as e:
             raise e
 
-    def _process_images(self: PDFParser, messages: list[List[HumanMessage]], model: object) -> str:
+    def _process_images(self: PDFParser, messages: list[list[HumanMessage]], model: object) -> str:
         """Process messages sequentially (v1 expects a single message)."""
         max_retries = 3
         responses = []

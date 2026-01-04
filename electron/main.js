@@ -1,14 +1,40 @@
-const { app, BrowserWindow } = require("electron");
-const { spawn } = require("child_process");
+const { app, BrowserWindow, dialog } = require("electron");
+const { spawn, spawnSync } = require("child_process");
 const path = require("path");
+const fs = require("fs");
 
 let backendProcess;
 
 const BACKEND_PORT = process.env.BACKEND_PORT || "8000";
 const BACKEND_HOST = process.env.BACKEND_HOST || "127.0.0.1";
 
+const resolvePythonBin = () => {
+  const envPython = process.env.PYTHON_BIN;
+  if (envPython && fs.existsSync(envPython)) {
+    return envPython;
+  }
+
+  const candidates = ["python3", "python"];
+  for (const candidate of candidates) {
+    const probe = spawnSync(candidate, ["-c", "print('ok')"], { stdio: "ignore" });
+    if (probe.status === 0) {
+      return candidate;
+    }
+  }
+
+  return null;
+};
+
 const startBackend = () => {
-  const pythonBin = process.env.PYTHON_BIN || "python";
+  const pythonBin = resolvePythonBin();
+  if (!pythonBin) {
+    dialog.showErrorBox(
+      "Python not found",
+      "AI PDF Reader requires Python 3 to run the local backend. Install Python and try again."
+    );
+    app.quit();
+    return;
+  }
   const appPath = app.getAppPath();
   const resourcesPath = process.resourcesPath;
   const isPackaged = app.isPackaged;
