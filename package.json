@@ -26,7 +26,11 @@
     ],
     "mac": {
       "category": "public.app-category.productivity"
-    }
+    },
+    "asarUnpack": [
+      "backend/**",
+      "config/**"
+    ]
   },
   "version": "0.1.0",
   "description": "Local AI-augmented PDF reader desktop app",
