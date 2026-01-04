@@ -1,6 +1,6 @@
-# AI PDF Reader
+# SophiAI
 
-An AI reading assistant I am semi-vibe coding. For when you want to ask questions on complicated texts in real-time. Initally got inspired to build this while attempting to read Hegel's Logic.
+An AI reading assistant I am currently building. For when you want to ask questions on complicated texts in real-time. Initally got inspired to build this while attempting to read Hegel's Logic.
 
 ## Features
 - Preview-like viewer with page navigation and zoom
@@ -42,7 +42,6 @@ make install
 make backend-run
 make frontend-run
 
-# Convenience wrappers that respect PYTHONPATH from Makefile
 make run_backend
 make run_frontend
 ```

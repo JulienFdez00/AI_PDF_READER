@@ -1,5 +1,5 @@
 {
-  "name": "ai-pdf-reader-desktop",
+  "name": "sophiai-desktop",
   "private": true,
   "main": "electron/main.js",
   "scripts": {
@@ -14,8 +14,8 @@
     "wait-on": "7.2.0"
   },
   "build": {
-    "appId": "com.ai-pdf-reader.app",
-    "productName": "AI PDF Reader",
+    "appId": "com.sophiai.app",
+    "productName": "SophiAI",
     "files": [
       "electron/**",
       "backend/**",

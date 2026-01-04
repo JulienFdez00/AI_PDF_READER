@@ -15,7 +15,7 @@ from backend.app.parser import PDFParser
 from backend.app.stream_explanation import stream_explanation
 from config.config import LOG_PREVIEW_CHARS, LOGGER
 
-app = FastAPI(title="AI PDF Reader API")
+app = FastAPI(title="SophiAI API")
 
 app.add_middleware(
     CORSMiddleware,

@@ -43,5 +43,5 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ai-pdf-reader-${{ matrix.os }}
+          name: sophiai-${{ matrix.os }}
           path: dist/

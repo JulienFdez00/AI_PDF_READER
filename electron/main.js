@@ -44,7 +44,7 @@ const startBackend = () => {
   if (!pythonBin) {
     dialog.showErrorBox(
       "Python not found",
-      "AI PDF Reader requires Python 3 to run the local backend. Install Python and try again."
+      "SophiAI requires Python 3 to run the local backend. Install Python and try again."
     );
     app.quit();
     return;

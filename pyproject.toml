@@ -3,12 +3,12 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "AI_PDF_READER"
+name = "SophiAI"
 authors = [
     { name = "Julien Fernandez", email = "j.fernandez17@ejm.org" },
 ]
 version = "0.0.1"
-description = "Repo for PDF reader with AI assistant."
+description = "Repo for the SophiAI reading assistant."
 readme = "README.md"
 requires-python = ">=3.13"
 
