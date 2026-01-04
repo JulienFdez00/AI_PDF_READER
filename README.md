@@ -1,6 +1,6 @@
 # SophiAI
 
-An AI reading assistant I am currently building. For when you want to ask questions on complicated texts in real-time. Initally got inspired to build this while attempting to read Hegel's Logic.
+An AI reading assistant I am currently building. Ask precise questions and get clear explanations page-by-page while reading complex texts. Initally got inspired to build this while attempting to read Hegel's Logic. Built for PDFs.
 
 ## Features
 - Preview-like viewer with page navigation and zoom
@@ -19,23 +19,6 @@ An AI reading assistant I am currently building. For when you want to ask questi
 
 ## Quickstart
 
-### Backend
-```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements-backend.txt
-uvicorn backend.app.main:app --reload --port 8000
-```
-
-### Frontend
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-Open `http://localhost:5173`.
-
 ### Make targets
 ```bash
 make install
@@ -45,6 +28,8 @@ make frontend-run
 make run_backend
 make run_frontend
 ```
+
+Open `http://localhost:5173`.
 
 ## Desktop (Electron)
 
