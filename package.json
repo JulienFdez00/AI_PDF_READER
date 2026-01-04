@@ -1,0 +1,34 @@
+{
+  "name": "ai-pdf-reader-desktop",
+  "private": true,
+  "main": "electron/main.js",
+  "scripts": {
+    "electron:dev": "concurrently \"PYTHONPATH=. UVICORN_RELOAD=1 python backend/main.py\" \"npm --prefix frontend run dev -- --port 5173 --strictPort\" \"wait-on http://localhost:5173 && ELECTRON_START_URL=http://localhost:5173 electron .\"",
+    "electron:build": "npm --prefix frontend run build",
+    "electron:package": "npm run electron:build && electron-builder"
+  },
+  "devDependencies": {
+    "concurrently": "9.0.1",
+    "electron": "30.5.1",
+    "electron-builder": "24.13.3",
+    "wait-on": "7.2.0"
+  },
+  "build": {
+    "appId": "com.ai-pdf-reader.app",
+    "productName": "AI PDF Reader",
+    "files": [
+      "electron/**",
+      "backend/**",
+      "frontend/dist/**",
+      "config/**",
+      "requirements-backend.txt",
+      "pyproject.toml"
+    ],
+    "mac": {
+      "category": "public.app-category.productivity"
+    }
+  },
+  "version": "0.1.0",
+  "description": "Local AI-augmented PDF reader desktop app",
+  "author": "Julien Fernandez"
+}

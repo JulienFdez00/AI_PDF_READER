@@ -47,6 +47,23 @@ make run_backend
 make run_frontend
 ```
 
+## Desktop (Electron)
+
+### Dev mode
+```bash
+npm install
+npm run electron:dev
+```
+
+### Package a desktop build
+```bash
+npm run electron:package
+```
+
+Notes:
+- The Electron app launches the FastAPI backend in the background.
+- The frontend build is loaded from `frontend/dist`.
+
 ## API
 `POST /explain-page`
 

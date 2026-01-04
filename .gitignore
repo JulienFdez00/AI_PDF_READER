@@ -157,5 +157,9 @@ pnpm-debug.log*
 # OS/editor noise
 .idea/
 
+# Electron build outputs
+release/
+out/
+
 # Node modules
 frontend/node_modules/
