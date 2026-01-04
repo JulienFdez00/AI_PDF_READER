@@ -16,6 +16,7 @@
   "build": {
     "appId": "com.ai-pdf-reader.app",
     "productName": "AI PDF Reader",
+    "publish": "never",
     "files": [
       "electron/**",
       "backend/**",
