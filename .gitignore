@@ -147,6 +147,8 @@ frontend/dist/
 frontend/.vite/
 frontend/.env
 frontend/.env.local
+node_modules/
+
 
 # Logs
 npm-debug.log*
@@ -157,5 +159,7 @@ pnpm-debug.log*
 # OS/editor noise
 .idea/
 
-# Node modules
-frontend/node_modules/
+# Electron build outputs
+release/
+out/
+
