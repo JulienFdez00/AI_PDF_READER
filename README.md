@@ -29,6 +29,20 @@ Open `http://localhost:5173`.
 
 Alternatively, you can run `make backend-run` and `make frontend-run` in two separate terminals.
 
+If you don’t have `make` (for example on Windows), run:
+```bash
+python -m venv .venv
+.\.venv\Scripts\activate
+pip install -r requirements-backend.txt
+uvicorn backend.app.main:app --reload --port 8000
+```
+Then in a second terminal:
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
 ## Desktop (Electron)
 
 ### Dev mode
